@@ -1,0 +1,27 @@
+{
+    "compilerOptions": {
+        "target": "ES6",
+        "module": "CommonJS",
+        "outDir": "dist",
+        "strict": true,
+        "esModuleInterop": true,
+        "forceConsistentCasingInFileNames": true,
+        "moduleResolution": "node",
+        "resolveJsonModule": true,
+        "noImplicitReturns": true,
+        "noUnusedLocals": false,
+        "noImplicitThis": true,
+        "noUnusedParameters": false,
+        "noFallthroughCasesInSwitch": true,
+        "baseUrl": "./src",
+        "paths": {
+            "@controllers/*": ["controllers/*"],
+            "@models/*": ["models/*"],
+            "@config/*": ["config/*"],
+            "@router/*": ["routes/*"]
+        }
+    },
+    "include": ["src/**/*.ts", "src/**/*.js"],
+
+    "exclude": ["node_modules", "dist", "generated snippets", "old"]
+}
