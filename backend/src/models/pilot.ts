@@ -9,6 +9,7 @@ export interface Pilot extends Document {
     email?: string
     lastSeen?: string
     lastSeenMs?: number
+    closestDistance?: number
 }
 
 const pilotSchema = new mongoose.Schema({
@@ -20,6 +21,7 @@ const pilotSchema = new mongoose.Schema({
     email: { type: String },
     lastSeen: { type: String, required: true },
     lastSeenMs: { type: Number, required: true },
+    closestDistance: { type: Number },
 })
 
 const PilotModel = mongoose.model<Pilot>("Pilot", pilotSchema)

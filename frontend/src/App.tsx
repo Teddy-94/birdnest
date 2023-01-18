@@ -10,14 +10,19 @@ function App() {
         try {
             const res = await fetch("http://localhost:5001/pilots")
             const data = await res.json()
+            console.log(data)
+            console.log(res)
             setPilots(data)
         } catch (err) {
-            console.error(err)
+            console.log("some error" + err)
         }
     }
 
     useEffect(() => {
+        fetchPilots()
         const interval = setInterval(() => {
+            console.log("auto update")
+            console.log(pilots)
             fetchPilots()
         }, 5000)
 

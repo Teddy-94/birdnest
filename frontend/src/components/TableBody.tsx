@@ -16,6 +16,7 @@ const TableBody = (props: any) => {
                             <td>{pilot.createdDt}</td>
                             <td>{pilot.email}</td>
                             <td>{pilot.lastSeen}</td>
+                            <td>{pilot.closestDistance}</td>
                         </tr>
                     )
                 })}

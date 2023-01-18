@@ -96,7 +96,7 @@ const getViolatingDronesWithPilotInfo = async (): Promise<{ drone: Drone; pilot:
     const violatingDrones: Drone[] = await getViolatingDrones()
     const dronesWithPilotInfo: { drone: Drone; pilot: Pilot }[] = []
     for (const drone of violatingDrones) {
-        const pilot = await findPilot(drone.serialNumber)
+        const pilot = await findPilot(drone)
         if (pilot) {
             dronesWithPilotInfo.push({ drone, pilot })
         }

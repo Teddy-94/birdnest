@@ -1,12 +1,15 @@
+import DroneModel, { Drone } from "../models/drone"
 import axios from "axios"
 import PilotModel, { Pilot } from "../models/pilot"
 
-const findPilot = async (serialNumber: string): Promise<Pilot | null> => {
+const findPilot = async (drone: Drone): Promise<Pilot | null> => {
     try {
-        const response = await axios.get(`http://assignments.reaktor.com/birdnest/pilots/${serialNumber}`)
+        const response = await axios.get(`http://assignments.reaktor.com/birdnest/pilots/${drone.serialNumber}`)
         const jsonData = response.data
+
         jsonData.lastSeen = new Date(Date.now()).toISOString()
         jsonData.lastSeenMs = new Date(Date.now()).getTime()
+        jsonData.closestDistance = drone.distance
         const pilot = new PilotModel(jsonData)
 
         console.log(pilot)
@@ -14,7 +17,7 @@ const findPilot = async (serialNumber: string): Promise<Pilot | null> => {
         await pilot.save()
         return pilot
     } catch (err) {
-        console.log("Pilot not found", err)
+        console.log("Pilot not found")
         return null
     }
 }
@@ -26,11 +29,11 @@ const getPilots = async (req: any, res: any): Promise<Pilot[] | null> => {
             res.status(200).json({ pilots })
             return pilots
         } else {
-            throw new Error("No pilots found")
+            console.log("Pilots not found")
+            return pilots
         }
     } catch (err) {
         res.status(500)
-        console.log("Pilot not found", err)
         return null
     }
 }
@@ -39,26 +42,27 @@ const getRecentViolations = async (req: any, res: any): Promise<Pilot[] | null> 
     try {
         let now = new Date().getTime() + 7200000 // 2 hours in milliseconds (Helsinki timezone)
         let tenMinutesAgo = now - 600000 // 10 minutes ago in milliseconds
-        const vilatingPilots: Pilot[] = []
+        const violatingPilots: Pilot[] = []
 
         const pilots = await PilotModel.find()
         if (pilots.length > 0) {
             pilots.forEach((pilot) => {
                 if (pilot.lastSeenMs! >= tenMinutesAgo) {
-                    vilatingPilots.push(pilot)
+                    violatingPilots.push(pilot)
                 }
             })
-            res.status(200).json({ vilatingPilots })
-            return vilatingPilots
+            res.status(200).json({ violatingPilots: violatingPilots })
+            return violatingPilots
         } else {
-            throw new Error("No pilots found")
+            console.log("Pilots not found")
+            return null
         }
     } catch (err) {
         res.status(500)
-        console.log("Error getting recent violations: ", err)
         return null
     }
 }
+
 const clearPilotsOverTenMinutes = async () => {
     try {
         let now = new Date().getTime() + 7200000 // +2 hours in milliseconds (Helsinki timezone)

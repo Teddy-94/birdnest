@@ -6,4 +6,5 @@ export interface Pilot {
     createdDt?: string
     email?: string
     lastSeen?: string
+    closestDistance?: number
 }
