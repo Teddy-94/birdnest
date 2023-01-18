@@ -103,11 +103,4 @@ const getViolatingDronesWithPilotInfo = async (): Promise<{ drone: Drone; pilot:
     return dronesWithPilotInfo
 }
 
-// const getRecentViolations = async (): Promise<Drone[]> => {
-//     const tenMinutesAgo = new Date()
-//     tenMinutesAgo.setMinutes(tenMinutesAgo.getMinutes() - 10)
-//     const violatingDrones = await DroneModel.find({ timestamp: { $gte: tenMinutesAgo } }).exec()
-//     return violatingDrones
-// }
-
 export { getViolatingDronesWithPilotInfo, saveViolatingDrones, getDrones, saveDrones, getViolatingDrones, clearDrones }
