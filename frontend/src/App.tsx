@@ -3,20 +3,25 @@ import { Pilot } from "./interface/Pilot"
 import TableBody from "./components/TableBody"
 import Buttons from "./components/Buttons"
 
-const App: React.FC = () => {
+function App() {
     const [pilots, setPilots] = useState<Pilot[]>([])
 
-    useEffect(() => {
-        const fetchPilots = async () => {
-            try {
-                const res = await fetch("http://localhost:5001/pilots")
-                const data = await res.json()
-                setPilots(data)
-            } catch (err) {
-                console.error(err)
-            }
+    const fetchPilots = async () => {
+        try {
+            const res = await fetch("http://localhost:5001/pilots")
+            const data = await res.json()
+            setPilots(data)
+        } catch (err) {
+            console.error(err)
         }
-        fetchPilots()
+    }
+
+    useEffect(() => {
+        const interval = setInterval(() => {
+            fetchPilots()
+        }, 5000)
+
+        return () => clearInterval(interval)
     }, [])
 
     return (
@@ -29,8 +34,9 @@ const App: React.FC = () => {
                         <th>Last Name</th>
                         <th>Phone</th>
                         <th>createdDt</th>
-                        <th>email</th>
-                        <th>lastSeen</th>
+                        <th>Email</th>
+                        <th>Last Seen</th>
+                        <th>Closest Distance</th>
                     </tr>
                 </thead>
                 <TableBody pilots={pilots} />

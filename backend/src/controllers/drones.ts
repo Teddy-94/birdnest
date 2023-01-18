@@ -51,6 +51,7 @@ const checkNoFlyZone = async (drones: Drone[]): Promise<Drone[]> => {
 
     for (const drone of drones) {
         const distance = Math.sqrt((noFlyZoneX - drone.positionX!) ** 2 + (noFlyZoneY - drone.positionY!) ** 2)
+        drone.distance=distance;
         if (distance < noFlyZoneRadius) {
             violatingDrones.push(drone)
         }

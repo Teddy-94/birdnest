@@ -21,7 +21,7 @@ const port = process.env.PORT || 5001
 
 databaseConnection()
 
-let scheduledJob = cron.schedule("* * * * *", () => {
+let scheduledJob = cron.schedule("*/1 * * * *", () => {
     console.log("running a task every minute")
     console.log("Clearing drone DB")
     clearDrones()

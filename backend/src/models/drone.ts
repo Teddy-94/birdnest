@@ -11,6 +11,7 @@ export interface Drone extends Document {
     positionY?: number;
     positionX?: number;
     altitude?: number;
+    distance?: number;
 }
 
 const droneSchema = new mongoose.Schema({
@@ -24,6 +25,7 @@ const droneSchema = new mongoose.Schema({
     positionY: { type: Number },
     positionX: { type: Number },
     altitude: { type: String },
+    distance: { type: Number },
 });
 
 
