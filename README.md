@@ -1,4 +1,5 @@
 # Birdnest
+This is an implementation aimed at the following assignment: http://assignments.reaktor.com/birdnest/ 
 # Missing features
 
 +re-render the table when the pilot list updates. This feature currently does not work as intended.
