@@ -1,4 +1,4 @@
-import express from "express"
+import express, {Response} from "express"
 import cors from "cors"
 import morgan from "morgan"
 import * as cron from "node-cron"
@@ -7,8 +7,8 @@ import routes from "./routes/routes"
 import { databaseConnection } from "./config/db"
 import "dotenv/config"
 
-import { clearDrones, getViolatingDronesWithPilotInfo, saveDrones } from "./controllers/drones"
-import { clearPilotsOverTenMinutes } from "./controllers/pilots"
+import { clearOldDrones, getViolatingDrones, } from "./controllers/drones"
+import { Drone } from "./models/drone"
 
 const app = express()
 
@@ -21,27 +21,23 @@ const port = process.env.PORT || 5001
 
 databaseConnection()
 
-let scheduledJob = cron.schedule("*/1 * * * *", () => {
-    console.log("running a task every minute")
-    console.log("Clearing drone DB")
-    clearDrones()
-    console.log("Saving new Drone Snapshot to DB")
-    saveDrones()
-    console.log("Clearing old Pilot data")
-    clearPilotsOverTenMinutes()
-    console.log("Storing pilots violating the NDZ")
-    getViolatingDronesWithPilotInfo()
-
-});
+// let scheduledJob = cron.schedule("*/1 * * * *", () => {
+//     //let res: Response<Drone[]> = {};
+//     console.log("running a task every minute")
+//     console.log("Clearing drone DB")
+//     clearOldDrones()
+//     console.log("storing violating drones")
+//     getViolatingDrones()
+// })
 
 app.listen(port, () => {
     console.log(`Server started on port ${port}`)
 
-    scheduledJob.start();
-});
+    //scheduledJob.start()
+})
 
-process.on('SIGINT', () => {
+process.on("SIGINT", () => {
     console.log("Cleaning up...")
-    scheduledJob.stop()
+    //scheduledJob.stop()
     process.exit(0)
-});
+})

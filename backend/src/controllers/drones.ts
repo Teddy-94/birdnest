@@ -1,10 +1,15 @@
+import { Request, Response } from "express"
 import DroneModel, { Drone } from "../models/drone"
 import PilotModel, { Pilot } from "../models/pilot"
 import { findPilot } from "./pilots"
 import axios from "axios"
 import { DOMParser } from "xmldom"
 
-const getDrones = async (): Promise<Drone[]> => {
+/**
+ * returns an array with all drones from the endpoint
+ * */
+
+const saveViolatingDrones = async (req: Request, res: Response): Promise<Drone[]> => {
     const { data: xmlString } = await axios.get("http://assignments.reaktor.com/birdnest/drones")
     const parser = new DOMParser()
     const xml = parser.parseFromString(xmlString, "application/xml")
@@ -24,6 +29,9 @@ const getDrones = async (): Promise<Drone[]> => {
         const positionY = Number(drone.getElementsByTagName("positionY")[0].textContent)
         const positionX = Number(drone.getElementsByTagName("positionX")[0].textContent)
         const altitude = Number(drone.getElementsByTagName("altitude")[0].textContent)
+        const lastSeen = new Date(Date.now()).getTime()
+
+        const pilot = await findPilot(serialNumber!)
 
         drones.push(
             new DroneModel({
@@ -37,12 +45,25 @@ const getDrones = async (): Promise<Drone[]> => {
                 positionY,
                 positionX,
                 altitude,
+                lastSeen,
+                pilot,
             })
         )
     }
-    return drones
+
+    const violatingDrones: Drone[] = await checkNoFlyZone(drones)
+    console.log("there are " + drones.length + " drones in the snapshot. " + violatingDrones.length + " are in the no fly zone")
+
+    for (const drone of violatingDrones) {
+        await new DroneModel(drone).save()
+    }
+    res.status(200).json(violatingDrones)
+    return violatingDrones
 }
 
+/**
+ * returns an array of drones that are within the no fly zone
+ * **/
 const checkNoFlyZone = async (drones: Drone[]): Promise<Drone[]> => {
     const noFlyZoneRadius = 100000
     const noFlyZoneX = 250000
@@ -51,7 +72,9 @@ const checkNoFlyZone = async (drones: Drone[]): Promise<Drone[]> => {
 
     for (const drone of drones) {
         const distance = Math.sqrt((noFlyZoneX - drone.positionX!) ** 2 + (noFlyZoneY - drone.positionY!) ** 2)
-        drone.distance=distance;
+
+        drone.distance = distance
+
         if (distance < noFlyZoneRadius) {
             violatingDrones.push(drone)
         }
@@ -59,49 +82,33 @@ const checkNoFlyZone = async (drones: Drone[]): Promise<Drone[]> => {
     return violatingDrones
 }
 
-const getViolatingDrones = async (): Promise<Drone[]> => {
-    const drones = await DroneModel.find()
-
-    const violatingDrones: Drone[] = await checkNoFlyZone(drones)
-    console.log("there are " + drones.length + " drones in the snapshot. " + violatingDrones.length + " are in the no fly zone")
-
+const getViolatingDrones = async () => {
+    const violatingDrones: Drone[] = await DroneModel.find()
+    console.log(violatingDrones)
     return violatingDrones
 }
 
-const saveViolatingDrones = async (violatingDrones: Drone[]): Promise<void> => {
-    for (const drone of violatingDrones) {
-        const existingDrone = await DroneModel.findOne({ serialNumber: drone.serialNumber })
-        if (existingDrone) {
-            await existingDrone.updateOne(drone)
-            console.log(drone)
-        } else {
-            console.log(drone)
-            await new DroneModel(drone).save()
-        }
-    }
+const clearOldDrones = async () => {
+    let now = new Date().getTime() + 7200000 // 2 hours in ms (Helsinki timezone)
+    let tenMinutesAgo = now - 600000 // 10 minutes in ms
+
+    const result = await DroneModel.deleteMany({ lastSeenMs: { $lt: tenMinutesAgo } })
+    console.log("Deleting drones not seen in the last 10 min")
+    console.log(result)
+    return result
 }
 
-const saveDrones = async (): Promise<void> => {
-    const drones: Drone[] = await getDrones()
-    for (const drone of drones) {
-        await new DroneModel(drone).save()
-    }
-}
+// DEBUG FUNCTION
+// const getViolatingDronesWithPilotInfo = async (): Promise<{ drone: Drone; pilot: Pilot }[]> => {
+//     const violatingDrones: Drone[] = await getViolatingDrones()
+//     const dronesWithPilotInfo: { drone: Drone; pilot: Pilot }[] = []
+//     for (const drone of violatingDrones) {
+//         const pilot = await findPilot(drone)
+//         if (pilot) {
+//             dronesWithPilotInfo.push({ drone, pilot })
+//         }
+//     }
+//     return dronesWithPilotInfo
+// }
 
-const clearDrones = async (): Promise<void> => {
-    await DroneModel.deleteMany()
-}
-
-const getViolatingDronesWithPilotInfo = async (): Promise<{ drone: Drone; pilot: Pilot }[]> => {
-    const violatingDrones: Drone[] = await getViolatingDrones()
-    const dronesWithPilotInfo: { drone: Drone; pilot: Pilot }[] = []
-    for (const drone of violatingDrones) {
-        const pilot = await findPilot(drone)
-        if (pilot) {
-            dronesWithPilotInfo.push({ drone, pilot })
-        }
-    }
-    return dronesWithPilotInfo
-}
-
-export { getViolatingDronesWithPilotInfo, saveViolatingDrones, getDrones, saveDrones, getViolatingDrones, clearDrones }
+export { saveViolatingDrones as getViolatingDrones, clearOldDrones }

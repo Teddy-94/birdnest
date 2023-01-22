@@ -1,29 +1,29 @@
 import { useState, useEffect } from "react"
-import { Pilot } from "./interface/Pilot"
+import { Drone } from "./interface/Drone"
 import TableBody from "./components/TableBody"
 import Buttons from "./components/Buttons"
 
 function App() {
-    const [pilots, setPilots] = useState<Pilot[]>([])
+    const [drones, setDrones] = useState<Drone[]>([])
 
-    const fetchPilots = async () => {
+    const getViolations = async () => {
         try {
-            const res = await fetch("http://localhost:5001/pilots")
+            const res = await fetch("http://localhost:5001/violatingDrones")
             const data = await res.json()
             console.log(data)
             console.log(res)
-            setPilots(data)
+            setDrones(data)
         } catch (err) {
             console.log("some error" + err)
         }
     }
 
     useEffect(() => {
-        fetchPilots()
+        getViolations()
         const interval = setInterval(() => {
             console.log("auto update")
-            console.log(pilots)
-            fetchPilots()
+            console.log(drones)
+            getViolations()
         }, 5000)
 
         return () => clearInterval(interval)
@@ -44,7 +44,7 @@ function App() {
                         <th>Closest Distance</th>
                     </tr>
                 </thead>
-                <TableBody pilots={pilots} />
+                <TableBody drone={drones} />
             </table>
             <Buttons />
         </>

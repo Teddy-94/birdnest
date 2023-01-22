@@ -1,22 +1,21 @@
-import { Pilot } from "../interface/Pilot"
+import { Drone, DroneData } from "../interface/Drone"
 import "../styles.css"
 
-const TableBody = (props: any) => {
+const TableBody = (droneData: DroneData) => {
     return (
         <tbody>
-            {props.pilots.pilots &&
-                Array.isArray(props.pilots.pilots) &&
-                props.pilots.pilots.map((pilot: Pilot, i: any) => {
+            {droneData.drone &&
+                droneData.drone.map((drone: Drone, index: number) => {
                     return (
-                        <tr key={i}>
-                            <td>{pilot.pilotId}</td>
-                            <td>{pilot.firstName}</td>
-                            <td>{pilot.lastName}</td>
-                            <td>{pilot.phoneNumber}</td>
-                            <td>{pilot.createdDt}</td>
-                            <td>{pilot.email}</td>
-                            <td>{pilot.lastSeen}</td>
-                            <td>{pilot.closestDistance}</td>
+                        <tr key={index}>
+                            <td>{drone.pilot.pilotId}</td>
+                            <td>{drone.pilot.firstName}</td>
+                            <td>{drone.pilot.lastName}</td>
+                            <td>{drone.pilot.phoneNumber}</td>
+                            <td>{drone.pilot.createdDt}</td>
+                            <td>{drone.pilot.email}</td>
+                            <td>{drone.lastSeen}</td>
+                            <td>{drone.closestDistance}</td>
                         </tr>
                     )
                 })}
