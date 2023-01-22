@@ -1,4 +1,3 @@
-import mongoose from "mongoose"
 import { Router } from "express"
 import { clearOldDrones, getViolatingDrones } from "../controllers/drones"
 

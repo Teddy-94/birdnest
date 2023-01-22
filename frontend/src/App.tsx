@@ -2,32 +2,45 @@ import { useState, useEffect } from "react"
 import { Drone } from "./interface/Drone"
 import TableBody from "./components/TableBody"
 import Buttons from "./components/Buttons"
+import LoadingScreen from "./components/LoadingScreen"
+import ErrorScreen from "./components/ErrorScreen"
 
 function App() {
     const [drones, setDrones] = useState<Drone[]>([])
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState(null);
 
     const getViolations = async () => {
-        try {
-            const res = await fetch("http://localhost:5001/violatingDrones")
-            const data = await res.json()
-            console.log(data)
-            console.log(res)
-            setDrones(data)
-        } catch (err) {
-            console.log("some error" + err)
+        setLoading(true);
+        setError(null);
+        const res = await fetch("http://localhost:5001/violatingDrones")
+        if (!res.ok) {
+            console.log(res.status);
+            throw new Error(res.statusText);
         }
+        const data = await res.json();
+        setDrones(data);
+        try {
+        } catch (err: any) {
+            setError(err.message);
+        }
+        setLoading(false);
     }
 
     useEffect(() => {
-        getViolations()
-        const interval = setInterval(() => {
-            console.log("auto update")
-            console.log(drones)
-            getViolations()
-        }, 5000)
+        getViolations();
+        const timeoutId = setTimeout(() => {
+            getViolations();
+        }, 5000);
+        return () => clearTimeout(timeoutId);
+    }, []);
 
-        return () => clearInterval(interval)
-    }, [])
+    if (loading) {
+        return <LoadingScreen />;
+    }
+    if (error) {
+        return <ErrorScreen message={error} />;
+    }
 
     return (
         <>
