@@ -8,8 +8,7 @@ import { DOMParser } from "xmldom"
 /**
  * returns an array with all drones from the endpoint
  * */
-
-const saveViolatingDrones = async (req: Request, res: Response): Promise<Drone[]> => {
+const saveViolatingDrones = async (): Promise<Drone[]> => {
     const { data: xmlString } = await axios.get("http://assignments.reaktor.com/birdnest/drones")
     const parser = new DOMParser()
     const xml = parser.parseFromString(xmlString, "application/xml")
@@ -57,7 +56,6 @@ const saveViolatingDrones = async (req: Request, res: Response): Promise<Drone[]
     for (const drone of violatingDrones) {
         await new DroneModel(drone).save()
     }
-    res.status(200).json(violatingDrones)
     return violatingDrones
 }
 
@@ -82,9 +80,10 @@ const checkNoFlyZone = async (drones: Drone[]): Promise<Drone[]> => {
     return violatingDrones
 }
 
-const getViolatingDrones = async () => {
+const getViolatingDrones = async (req: Request, res: Response) => {
     const violatingDrones: Drone[] = await DroneModel.find()
     console.log(violatingDrones)
+    res.status(200).json(violatingDrones)
     return violatingDrones
 }
 
@@ -98,17 +97,4 @@ const clearOldDrones = async () => {
     return result
 }
 
-// DEBUG FUNCTION
-// const getViolatingDronesWithPilotInfo = async (): Promise<{ drone: Drone; pilot: Pilot }[]> => {
-//     const violatingDrones: Drone[] = await getViolatingDrones()
-//     const dronesWithPilotInfo: { drone: Drone; pilot: Pilot }[] = []
-//     for (const drone of violatingDrones) {
-//         const pilot = await findPilot(drone)
-//         if (pilot) {
-//             dronesWithPilotInfo.push({ drone, pilot })
-//         }
-//     }
-//     return dronesWithPilotInfo
-// }
-
-export { saveViolatingDrones as getViolatingDrones, clearOldDrones }
+export { saveViolatingDrones, clearOldDrones, getViolatingDrones }

@@ -2,10 +2,10 @@
 This is an implementation aimed at the following assignment: http://assignments.reaktor.com/birdnest/ 
 # Missing features
 
-+re-render the table when the pilot list updates. This feature currently does not work as intended.
-+closestDistance. This is currently displaying last distance. Comparison between last distance and closestDistance needs to be implemented
++closestDistance. Comparison between last distance and closestDistance needs to be implemented
 +deploy somewhere. This is currently not deployed anywhere and only tested locally.
 +remove debugging. Clean console logs and debug buttons.
++improve frontend updating of the table.
 
 # To build
 

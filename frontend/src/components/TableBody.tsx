@@ -6,16 +6,32 @@ const TableBody = (droneData: DroneData) => {
         <tbody>
             {droneData.drone &&
                 droneData.drone.map((drone: Drone, index: number) => {
+                    const id = drone.pilot.pilotId
+                    const firstName = drone.pilot.firstName
+                    const lastName = drone.pilot.lastName
+                    const phoneNumber = drone.pilot.phoneNumber
+                    const createdDt = drone.pilot.createdDt
+                    const email = drone.pilot.email
+                    const lastSeen = new Date(drone.lastSeen!).toLocaleString('se', {
+                        year: 'numeric',
+                        month: 'numeric',
+                        day: 'numeric',
+                        hour: 'numeric',
+                        minute: 'numeric',
+                        second: 'numeric',
+                      });
+                    const closestDistanceMs = drone.closestDistance
+
                     return (
                         <tr key={index}>
-                            <td>{drone.pilot.pilotId}</td>
-                            <td>{drone.pilot.firstName}</td>
-                            <td>{drone.pilot.lastName}</td>
-                            <td>{drone.pilot.phoneNumber}</td>
-                            <td>{drone.pilot.createdDt}</td>
-                            <td>{drone.pilot.email}</td>
-                            <td>{drone.lastSeen}</td>
-                            <td>{drone.closestDistance}</td>
+                            <td>{id}</td>
+                            <td>{firstName}</td>
+                            <td>{lastName}</td>
+                            <td>{phoneNumber}</td>
+                            <td>{createdDt}</td>
+                            <td>{email}</td>
+                            <td>{lastSeen}</td>
+                            <td>{closestDistanceMs}</td>
                         </tr>
                     )
                 })}
