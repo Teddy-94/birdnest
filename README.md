@@ -9,7 +9,7 @@ This is an implementation aimed at the following assignment: http://assignments.
 
 # To build
 
-this project requires a mongoDB database, with two collections: drones, and pilots.
+this project requires a mongoDB database, with one collection to save the drones that have been within the no fly zone in the last 10 minutes with the pilot info
 
 The database needs to be connected through a .env file containing a DB_URI variable.
 
