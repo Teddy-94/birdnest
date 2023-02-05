@@ -1,6 +1,5 @@
 import { Request, Response } from "express"
 import DroneModel, { Drone } from "../models/drone"
-import PilotModel, { Pilot } from "../models/pilot"
 import { findPilot } from "./pilots"
 import axios from "axios"
 import { DOMParser } from "xmldom"
