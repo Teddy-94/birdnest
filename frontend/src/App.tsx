@@ -1,19 +1,18 @@
-import { useState, useEffect } from "react"
-import { Drone } from "./interface/Drone"
-import TableBody from "./components/TableBody"
-import Buttons from "./components/Buttons"
-import LoadingScreen from "./components/LoadingScreen"
-import ErrorScreen from "./components/ErrorScreen"
+import { useState, useEffect } from "react";
+import { Drone } from "./interface/Drone";
+import TableBody from "./components/TableBody";
+import Buttons from "./components/Buttons";
+import { LoadingStatus } from "./components/LoadingScreen";
 
 function App() {
-    const [drones, setDrones] = useState<Drone[]>([])
+    const [drones, setDrones] = useState<Drone[]>([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
 
     const getViolations = async () => {
         setLoading(true);
         setError(null);
-        const res = await fetch("http://localhost:5001/violatingDrones")
+        const res = await fetch("http://localhost:5001/violatingDrones");
         if (!res.ok) {
             console.log(res.status);
             throw new Error(res.statusText);
@@ -21,11 +20,11 @@ function App() {
         const data = await res.json();
         setDrones(data);
         try {
-        } catch (err: any) {
-            setError(err.message);
+        } catch (error: any) {
+            setError(error.message);
         }
         setLoading(false);
-    }
+    };
 
     useEffect(() => {
         getViolations();
@@ -34,13 +33,6 @@ function App() {
         }, 5000);
         return () => clearTimeout(timeoutId);
     }, []);
-
-    if (loading) {
-        return <LoadingScreen />;
-    }
-    if (error) {
-        return <ErrorScreen message={error} />;
-    }
 
     return (
         <>
@@ -59,9 +51,10 @@ function App() {
                 </thead>
                 <TableBody drone={drones} />
             </table>
+            <LoadingStatus loading={loading} />
             <Buttons />
         </>
-    )
+    );
 }
 
-export default App
+export default App;

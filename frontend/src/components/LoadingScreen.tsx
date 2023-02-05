@@ -1,10 +1,14 @@
-const LoadingSpinner = () => {
-    return (
-        <div className="loading-spinner-container">
-            <div className="loading-spinner"></div>
-            <p>Loading...</p>
-        </div>
-    );
+export interface LoadingStatusProps {
+    loading: boolean;
 }
 
-export default LoadingSpinner;
+export const LoadingStatus = ({ loading }: LoadingStatusProps) => {
+    if (loading) {
+        return (
+            <>
+                <div className='loading-spinner'></div>
+                <p>Loading...</p>
+            </>
+        );
+    } else return <></>;
+};
